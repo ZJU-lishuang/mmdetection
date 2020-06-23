@@ -1,7 +1,9 @@
-# _base_ = '../faster_rcnn/faster_rcnn_r50_fpn_1x_coco.py'
+# _base_ = [
+#     '../_base_/datasets/voc0712.py','../_base_/schedules/schedule_1x.py', 
+#     '../_base_/default_runtime.py'
+# ]
 
 model = dict(
-    # _delete_=True,
     type='YoloNet',
     pretrained=None,
     backbone=dict(
@@ -74,22 +76,22 @@ test_pipeline = [
 data = dict(
     samples_per_gpu=2,
     workers_per_gpu=2,
-    # train=dict(
-    #     type='RepeatDataset',
-    #     times=3,
-    #     dataset=dict(
-    #         type=dataset_type,
-    #         ann_file=[
-    #             data_root + 'VOC2007/ImageSets/Main/trainval.txt',
-    #             data_root + 'VOC2012/ImageSets/Main/trainval.txt'
-    #         ],
-    #         img_prefix=[data_root + 'VOC2007/', data_root + 'VOC2012/'],
-    #         pipeline=train_pipeline)),
     train=dict(
-        type=dataset_type,
-        ann_file=data_root + 'VOC2007/ImageSets/Main/trainval.txt',
-        img_prefix=data_root + 'VOC2007/',
-        pipeline=train_pipeline),
+        type='RepeatDataset',
+        times=3,
+        dataset=dict(
+            type=dataset_type,
+            ann_file=[
+                data_root + 'VOC2007/ImageSets/Main/trainval.txt',
+                data_root + 'VOC2012/ImageSets/Main/trainval.txt'
+            ],
+            img_prefix=[data_root + 'VOC2007/', data_root + 'VOC2012/'],
+            pipeline=train_pipeline)),
+    # train=dict(
+    #     type=dataset_type,
+    #     ann_file=data_root + 'VOC2007/ImageSets/Main/trainval.txt',
+    #     img_prefix=data_root + 'VOC2007/',
+    #     pipeline=train_pipeline),
     val=dict(
         type=dataset_type,
         ann_file=data_root + 'VOC2007/ImageSets/Main/test.txt',

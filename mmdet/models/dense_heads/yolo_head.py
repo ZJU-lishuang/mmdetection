@@ -1,5 +1,3 @@
-# Copyright (c) 2019 Western Digital Corporation or its affiliates.
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

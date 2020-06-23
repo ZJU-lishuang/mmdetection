@@ -9,88 +9,8 @@ from torch.nn.modules.batchnorm import _BatchNorm
 from mmdet.ops import build_plugin_layer
 from mmdet.utils import get_root_logger
 from ..builder import BACKBONES
-# from ..utils import CSPResLayer
+from ..utils import ResLayer
 import torch
-
-class CSPResLayer(nn.Sequential):
-    """ResLayer to build ResNet style backbone.
-
-    Args:
-        block (nn.Module): block used to build ResLayer.
-        inplanes (int): inplanes of block.
-        planes (int): planes of block.
-        num_blocks (int): number of blocks.
-        stride (int): stride of the first block. Default: 1
-        avg_down (bool): Use AvgPool instead of stride conv when
-            downsampling in the bottleneck. Default: False
-        conv_cfg (dict): dictionary to construct and config conv layer.
-            Default: None
-        norm_cfg (dict): dictionary to construct and config norm layer.
-            Default: dict(type='BN')
-        downsample_first (bool): Downsample at the first block or last block.
-            False for Hourglass, True for ResNet. Default: True
-    """
-
-    def __init__(self,
-                 block,
-                 inplanes,
-                 planes,
-                 num_blocks,
-                 stride=1,
-                 avg_down=False,
-                 conv_cfg=None,
-                 norm_cfg=dict(type='BN'),
-                 downsample_first=True,
-                 **kwargs):
-        self.block = block
-
-        downsample = None
-        if stride != 1 or inplanes != planes * block.expansion:
-            downsample = []
-            conv_stride = stride
-            if avg_down and stride != 1:
-                conv_stride = 1
-                downsample.append(
-                    nn.AvgPool2d(
-                        kernel_size=stride,
-                        stride=stride,
-                        ceil_mode=True,
-                        count_include_pad=False))
-            downsample.extend([
-                build_conv_layer(
-                    conv_cfg,
-                    inplanes,
-                    planes * block.expansion,
-                    kernel_size=1,
-                    stride=conv_stride,
-                    bias=False),
-                build_norm_layer(norm_cfg, planes * block.expansion)[1]
-            ])
-            downsample = nn.Sequential(*downsample)
-
-        layers = []
-        layers.append(
-            block(
-                inplanes=inplanes,
-                planes=planes,
-                stride=stride,
-                downsample=downsample,
-                conv_cfg=conv_cfg,
-                norm_cfg=norm_cfg,
-                **kwargs))
-        inplanes = planes * block.expansion
-        for _ in range(1, num_blocks):
-            layers.append(
-                block(
-                    inplanes=inplanes,
-                    planes=planes,
-                    stride=1,
-                    conv_cfg=conv_cfg,
-                    norm_cfg=norm_cfg,
-                    **kwargs))
-
-
-        super(CSPResLayer, self).__init__(*layers)
 
 class CSPBottleneck(nn.Module):
     expansion = 2  #从残差网络的4改为2，维度减半，分为两个部分
@@ -278,7 +198,7 @@ class CSPBigBottleneck(nn.Module):
         self.downsample = downsample
 
     def make_cspres_layer(self, **kwargs):
-        return CSPResLayer(**kwargs)
+        return ResLayer(**kwargs)
 
     @property
     def norm1(self):
@@ -473,14 +393,14 @@ class CSPResNet(nn.Module):
         else:
             raise TypeError('pretrained must be a str or None')
 
-    # def train(self, mode=True):
-    #     super(CSPResNet, self).train(mode)
-    #     self._freeze_stages()
-    #     if mode and self.norm_eval:
-    #         for m in self.modules():
-    #             # trick: eval have effect on BatchNorm only
-    #             if isinstance(m, _BatchNorm):
-    #                 m.eval()
+    def train(self, mode=True):
+        super(CSPResNet, self).train(mode)
+        # self._freeze_stages()
+        # if mode and self.norm_eval:
+        #     for m in self.modules():
+        #         # trick: eval have effect on BatchNorm only
+        #         if isinstance(m, _BatchNorm):
+        #             m.eval()
 
 
 if __name__ == '__main__':

@@ -10,7 +10,10 @@ model = dict(
         norm_cfg=dict(type='BN', requires_grad=True),
         norm_eval=True),
     neck=dict(
-        type='YoloNeck', ),
+        type='PANETSPPNeck',
+        in_channels=[256,512,1024],
+        out_channels=[128,256,512],
+        num_outs=3),
     bbox_head=dict(
         type='YoloHead', )
 )
