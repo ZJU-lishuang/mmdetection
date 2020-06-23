@@ -15,7 +15,8 @@ model = dict(
         out_channels=[128,256,512],
         num_outs=3),
     bbox_head=dict(
-        type='YoloHead', )
+        type='YoloHead',
+        num_classes=80,)
 )
 train_cfg = dict(
     one_hot_smoother=0.,

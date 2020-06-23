@@ -47,27 +47,46 @@ class ConvLayer(nn.Module):
 @HEADS.register_module
 class YoloHead(nn.Module):
 
-    num_scales = 3
-    num_classes_no_bkg = 20
-    num_classes_w_bkg = num_classes_no_bkg + 1
-    # num_classes = num_classes_w_bkg
-    num_classes = num_classes_no_bkg
-    num_anchors_per_scale = 3
-    num_attrib = num_classes_no_bkg + 5
-    last_layer_dim = num_anchors_per_scale * num_attrib
-    in_channels = [512, 256, 128]
-    out_channels = [1024, 512, 256]
-    scales = ['l', 'm', 's']
-    strides = [32, 16, 8]
-    # scale_params = [(1024, 'l', 32), (512, 'm', 16), (256, 's', 8)]  #out_channel, scale, stride
+    # num_scales = 3
+    # num_classes_no_bkg = 20
+    # num_classes_w_bkg = num_classes_no_bkg + 1
+    # # num_classes = num_classes_w_bkg
+    # num_classes = num_classes_no_bkg
+    # num_anchors_per_scale = 3
+    # num_attrib = num_classes_no_bkg + 5
+    # last_layer_dim = num_anchors_per_scale * num_attrib
+    # in_channels = [512, 256, 128]
+    # out_channels = [1024, 512, 256]
+    # scales = ['l', 'm', 's']
+    # strides = [32, 16, 8]
+    # # scale_params = [(1024, 'l', 32), (512, 'm', 16), (256, 's', 8)]  #out_channel, scale, stride
+    #
+    # anchor_base_sizes = [[(116, 90), (156, 198), (373, 326)],
+    #                      [(30, 61), (62, 45), (59, 119)],
+    #                      [(10, 13), (16, 30), (33, 23)],
+    #                      ]
 
-    anchor_base_sizes = [[(116, 90), (156, 198), (373, 326)],
-                         [(30, 61), (62, 45), (59, 119)],
-                         [(10, 13), (16, 30), (33, 23)],
-                         ]
-
-    def __init__(self,train_cfg=None,test_cfg=None):
+    def __init__(self,num_classes=80,train_cfg=None,test_cfg=None):
         super(YoloHead, self).__init__()
+        self.num_scales = 3
+        self.num_classes_no_bkg =num_classes
+        self.num_classes_w_bkg = self.num_classes_no_bkg + 1
+        # num_classes = num_classes_w_bkg
+        self.num_classes = self.num_classes_no_bkg
+        self.num_anchors_per_scale = 3
+        self.num_attrib = self.num_classes_no_bkg + 5
+        self.last_layer_dim = self.num_anchors_per_scale * self.num_attrib
+        self.in_channels = [512, 256, 128]
+        self.out_channels = [1024, 512, 256]
+        self.scales = ['l', 'm', 's']
+        self.strides = [32, 16, 8]
+
+        self.anchor_base_sizes = [[(116, 90), (156, 198), (373, 326)],
+                             [(30, 61), (62, 45), (59, 119)],
+                             [(10, 13), (16, 30), (33, 23)],
+                             ]
+
+
         self.convs_bridge = nn.ModuleList()
         self.convs_final = nn.ModuleList()
         for i_scale in range(self.num_scales):
