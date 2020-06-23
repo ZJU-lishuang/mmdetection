@@ -50,9 +50,10 @@ class ConvLayer(nn.Module):
 class YoloHead(nn.Module):
 
     num_scales = 3
-    num_classes_no_bkg = 80
+    num_classes_no_bkg = 20
     num_classes_w_bkg = num_classes_no_bkg + 1
-    num_classes = num_classes_w_bkg
+    # num_classes = num_classes_w_bkg
+    num_classes = num_classes_no_bkg
     num_anchors_per_scale = 3
     num_attrib = num_classes_no_bkg + 5
     last_layer_dim = num_anchors_per_scale * num_attrib
