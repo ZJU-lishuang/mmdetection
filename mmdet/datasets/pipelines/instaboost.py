@@ -93,5 +93,5 @@ class InstaBoost(object):
 
     def __repr__(self):
         repr_str = self.__class__.__name__
-        repr_str += f'(cfg={self.cfg}, aug_ratio={self.aug_ratio})'
+        repr_str += '(cfg={self.cfg}, aug_ratio={self.aug_ratio})'
         return repr_str
