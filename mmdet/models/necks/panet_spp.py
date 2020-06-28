@@ -149,7 +149,7 @@ class PANETSPPNeck(nn.Module):  #the name YoloNeck is wrong ,need to modify ,lik
     Assembling YoloNetTail and DarkNet53BackBone will give you final result"""
 
     def __init__(self,in_channels=[256,512,1024],out_channels=[128,256,512],num_outs=3,start_level=0,
-                 end_level=-1):
+                 end_level=-1,SPP=True):
         super(PANETSPPNeck, self).__init__()
         self.num_ins = len(in_channels)
         self.in_channels = in_channels
@@ -176,8 +176,11 @@ class PANETSPPNeck(nn.Module):  #the name YoloNeck is wrong ,need to modify ,lik
             self.pafpn_convs.append(pafpn_conv)
             self.lateral_convs.append(l_conv)
         #SPP
-        self.lateral_convs.append(DetectionSPPNeck(in_channels[self.backbone_end_level-1], out_channels[self.backbone_end_level-1]))
-
+        self.SPP = SPP
+        if self.SPP==True:
+            self.lateral_convs.append(DetectionSPPNeck(in_channels[self.backbone_end_level-1], out_channels[self.backbone_end_level-1]))
+        else:
+            self.lateral_convs.append(DetectionNeck(in_channels[self.backbone_end_level-1], out_channels[self.backbone_end_level-1]))
 
 
     def forward(self, inputs):

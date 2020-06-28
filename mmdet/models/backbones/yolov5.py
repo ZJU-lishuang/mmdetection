@@ -32,33 +32,51 @@ def initialize_weights(model):
 class YoloV5(nn.Module):
     def __init__(self,gd,gw ,dim_in=3):
         super(YoloV5, self).__init__()
-        # gd = cfg.MODEL.YOLOV5.DEPTH_MULTIPLE
-        # gw = cfg.MODEL.YOLOV5.WIDTH_MULTIPLE
         ch = lambda x: math.ceil(x*gw/8)*8
         dn = lambda x: max(round(x*gd), 1) if x > 1 else 1
-        # out_channels = cfg.MODEL.YOLOV5.BACKBONE_OUT_CHANNELS
-        self.backbone = nn.ModuleList([
-            Focus(dim_in, ch(64), k=3),  # 1-P1/2
-            Conv(ch(64), ch(128), 3, 2), # 2-p2/4
-            Bottleneck(ch(128), ch(128)),
-            Conv(ch(128), ch(256), 3, 2), # 3-p3/8
-            BottleneckCSP(ch(256), ch(256), dn(9)),
-            Conv(ch(256), ch(512), 3, 2), # 4-p4/16
-            BottleneckCSP(ch(512), ch(512), dn(9)),
-            Conv(ch(512), ch(1024), 3, 2), # 8-p5/32
-            SPP(ch(1024), ch(1024), (5, 9, 13)),
-            BottleneckCSP(ch(1024), ch(1024), dn(6)),
-            ])
+        # self.backbone = nn.ModuleList([
+        #     Focus(dim_in, ch(64), k=3),  # 1-P1/2
+        #     Conv(ch(64), ch(128), 3, 2), # 2-p2/4
+        #     Bottleneck(ch(128), ch(128)),
+        #     Conv(ch(128), ch(256), 3, 2), # 3-p3/8
+        #     BottleneckCSP(ch(256), ch(256), dn(9)),
+        #     Conv(ch(256), ch(512), 3, 2), # 4-p4/16
+        #     BottleneckCSP(ch(512), ch(512), dn(9)),
+        #     Conv(ch(512), ch(1024), 3, 2), # 8-p5/32
+        #     SPP(ch(1024), ch(1024), (5, 9, 13)),
+        #     BottleneckCSP(ch(1024), ch(1024), dn(6)),
+        #     ])
+        self.backbone=nn.ModuleList(
+            [
+                Focus(dim_in, ch(64), k=3),  # 1-P1/2
+                Conv(ch(64), ch(128), 3, 2), # 2-p2/4
+                BottleneckCSP(ch(128), ch(128), dn(3)),
+                Conv(ch(128), ch(256), 3, 2), # 3-p3/8
+                BottleneckCSP(ch(256), ch(256), dn(9)),
+                Conv(ch(256), ch(512), 3, 2), # 4-p4/16
+                BottleneckCSP(ch(512), ch(512), dn(9)),
+                Conv(ch(512), ch(1024), 3, 2), # 8-p5/32
+                SPP(ch(1024), ch(1024), (5, 9, 13)),
+            ]
+        )
 
     
     
 
 
     def init_weights(self, pretrained=None):
+        # if isinstance(pretrained, str):
+        #     pretrained = '/home/lishuang/Disk/dukto/centermask_yolov5l_backbone.pth'
+        #     pretrained_checkpoint=torch.load(pretrained)
+        #     model_dict = self.state_dict()
+        #     pretrained_dict = {k.replace('backbone.body.', ''): v for k, v in pretrained_checkpoint.items() if k.replace('backbone.body.', '') in model_dict}
+        #     model_dict = self.state_dict()
+        #     model_dict.update(pretrained_dict)
+        #     self.load_state_dict(model_dict)
+        #     print("init_weights")
         if isinstance(pretrained, str):
             logger = get_root_logger()
             load_checkpoint(self, pretrained, strict=False, logger=logger)
-            # load_checkpoint(self, pretrained, strict=True, logger=logger)
         elif pretrained is None:
             for m in self.modules():
                 if isinstance(m, nn.Conv2d):
