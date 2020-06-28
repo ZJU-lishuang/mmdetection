@@ -5,9 +5,9 @@ from .hrfpn import HRFPN
 from .nas_fpn import NASFPN
 from .nasfcos_fpn import NASFCOS_FPN
 from .pafpn import PAFPN
-from .yolo_neck import YoloNeck
 from .panet_spp import PANETSPPNeck
+from .yolov5neck import Yolov5Neck
 
 __all__ = [
-    'FPN', 'BFP', 'HRFPN', 'NASFPN', 'FPN_CARAFE', 'PAFPN', 'NASFCOS_FPN','YoloNeck','PANETSPPNeck'
+    'FPN', 'BFP', 'HRFPN', 'NASFPN', 'FPN_CARAFE', 'PAFPN', 'NASFCOS_FPN','PANETSPPNeck'
 ]
