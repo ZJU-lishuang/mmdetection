@@ -58,6 +58,8 @@ def plot_curve(log_dicts, args):
                 ys = []
                 for epoch in epochs:
                     ys += log_dict[epoch][metric]
+                if len(xs) > len(ys):  #提前终止训练时epoch数量比mAP多1
+                    xs=xs[:-1]
                 ax = plt.gca()
                 ax.set_xticks(xs)
                 plt.xlabel('epoch')

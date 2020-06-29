@@ -284,6 +284,8 @@ class Yolov5Head(nn.Module):
 
         losses = {'xy': 0, 'wh': 0, 'conf': 0, 'cls': 0}
 
+        reduction = 'none'
+
         for i_scale in range(self.num_scales):
             pred_raw = preds_raw[i_scale]
             gt_t = gts_t[i_scale]
@@ -320,22 +322,46 @@ class Yolov5Head(nn.Module):
 
             pos_weight = gt_label.new_tensor(pos_weight)
 
-            losses_cls = F.binary_cross_entropy_with_logits(pred_label, gt_label, reduction='none')
+            if reduction=='none':
+                losses_cls = F.binary_cross_entropy_with_logits(pred_label, gt_label, reduction='none')
 
-            losses_cls *= pos_mask
+                losses_cls *= pos_mask
 
-            losses_conf = F.binary_cross_entropy_with_logits(pred_conf,
-                                                             gt_conf,
-                                                             reduction='none',
-                                                             pos_weight=pos_weight
-                                                             ) * pos_and_neg_mask * conf_loss_weight
+                losses_conf = F.binary_cross_entropy_with_logits(pred_conf,
+                                                                 gt_conf,
+                                                                 reduction='none',
+                                                                 pos_weight=pos_weight
+                                                                 ) * pos_and_neg_mask * conf_loss_weight
 
-            if xy_use_logit:
-                losses_xy = F.mse_loss(pred_t_xy, gt_t_xy, reduction='none') * pos_mask * 2
-            else:
-                losses_xy = F.binary_cross_entropy_with_logits(pred_t_xy, gt_t_xy, reduction='none') * pos_mask * 2
 
-            losses_wh = F.mse_loss(pred_t_wh, gt_t_wh, reduction='none') * pos_mask * 2
+                if xy_use_logit:
+                    losses_xy = F.mse_loss(pred_t_xy, gt_t_xy, reduction='none') * pos_mask * 2
+                else:
+                    losses_xy = F.binary_cross_entropy_with_logits(pred_t_xy, gt_t_xy, reduction='none') * pos_mask * 2
+
+
+                losses_wh = F.mse_loss(pred_t_wh, gt_t_wh, reduction='none') * pos_mask * 2
+
+            if reduction=='mean':
+                losses_cls = F.binary_cross_entropy_with_logits(pred_label[pos_mask.repeat(1, 1, 1, 20).bool()],
+                                                                gt_label[pos_mask.repeat(1, 1, 1, 20).bool()],
+                                                                reduction='mean')
+
+                losses_conf = F.binary_cross_entropy_with_logits(pred_conf[pos_mask.squeeze().bool()],
+                                                                 gt_conf[pos_mask.squeeze().bool()], reduction='mean',
+                                                                 pos_weight=pos_weight)
+
+                if xy_use_logit:
+                    losses_xy = F.mse_loss(pred_t_xy[pos_mask.repeat(1, 1, 1, 2).bool()], gt_t_xy[pos_mask.repeat(1, 1, 1, 2).bool()], reduction='mean')
+                else:
+                    losses_xy = F.binary_cross_entropy_with_logits(pred_t_xy[pos_mask.repeat(1, 1, 1, 2).bool()],
+                                                               gt_t_xy[pos_mask.repeat(1, 1, 1, 2).bool()],
+                                                               reduction='mean')
+
+                losses_wh = F.mse_loss(pred_t_wh[pos_mask.repeat(1,1,1,2).bool()], gt_t_wh[pos_mask.repeat(1,1,1,2).bool()], reduction='mean')
+
+                if torch.sum(pos_mask)==0:  #nan problem
+                    continue
 
             losses['cls'] += torch.sum(losses_cls)
             losses['conf'] += torch.sum(losses_conf)
