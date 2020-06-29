@@ -6,12 +6,14 @@ model = dict(
         gd=1,
         gw=1,),
     neck=dict(
-        type='Yolov5Neck',),
+        type='Yolov5Neck',
+        gd=1,
+        gw=1,),
     bbox_head=dict(
         type='Yolov5Head',
         num_classes=20,
-        in_channels=[512, 256, 128],
-        out_channels=[1024, 512, 256])
+        out_channels=[1024, 512, 256],
+        gw=1,)
 )
 train_cfg = dict(
     one_hot_smoother=0.,

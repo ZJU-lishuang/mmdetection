@@ -23,10 +23,8 @@ class Yolov5Neck(nn.Module):  #the name YoloNeck is wrong ,need to modify ,like 
     It will finally output the detection result.
     Assembling YoloNetTail and DarkNet53BackBone will give you final result"""
 
-    def __init__(self):
+    def __init__(self,gd=1,gw=1):
         super(Yolov5Neck, self).__init__()
-        gw=1
-        gd=1
         ch = lambda x: math.ceil(x * gw / 8) * 8
         dn = lambda x: max(round(x * gd), 1) if x > 1 else 1
         self.layer_9 = BottleneckCSP(ch(1024), ch(1024), dn(3))

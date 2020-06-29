@@ -15,39 +15,40 @@ from mmcv.runner import load_checkpoint
 from mmdet.core import (multiclass_nms, force_fp32)
 
 from mmdet.ops.nms import nms_wrapper
-
+import math
 
 _EPSILON = 1e-6
 
-class ConvLayer(nn.Module):
-    """Basic 'conv' layer, including:
-     A Conv2D layer with desired channels and kernel size,
-     A batch-norm layer,
-     and A leakyReLu layer with neg_slope of 0.1.
-     (Didn't find too much resource what neg_slope really is.
-     By looking at the darknet source code, it is confirmed the neg_slope=0.1.
-     Ref: https://github.com/pjreddie/darknet/blob/master/src/activations.h)
-     Please note here we distinguish between Conv2D layer and Conv layer."""
-
-    def __init__(self, in_channels, out_channels, kernel_size, stride=1, lrelu_neg_slope=0.1):
-        super(ConvLayer, self).__init__()
-        padding = (kernel_size - 1) // 2
-        self.conv = nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding, bias=False)
-        self.bn = nn.BatchNorm2d(out_channels)
-        self.lrelu = nn.LeakyReLU(negative_slope=lrelu_neg_slope)
-
-    def forward(self, x):
-        out = self.conv(x)
-        out = self.bn(out)
-        out = self.lrelu(out)
-
-        return out
+# class ConvLayer(nn.Module):
+#     """Basic 'conv' layer, including:
+#      A Conv2D layer with desired channels and kernel size,
+#      A batch-norm layer,
+#      and A leakyReLu layer with neg_slope of 0.1.
+#      (Didn't find too much resource what neg_slope really is.
+#      By looking at the darknet source code, it is confirmed the neg_slope=0.1.
+#      Ref: https://github.com/pjreddie/darknet/blob/master/src/activations.h)
+#      Please note here we distinguish between Conv2D layer and Conv layer."""
+#
+#     def __init__(self, in_channels, out_channels, kernel_size, stride=1, lrelu_neg_slope=0.1):
+#         super(ConvLayer, self).__init__()
+#         padding = (kernel_size - 1) // 2
+#         self.conv = nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding, bias=False)
+#         self.bn = nn.BatchNorm2d(out_channels)
+#         self.lrelu = nn.LeakyReLU(negative_slope=lrelu_neg_slope)
+#
+#     def forward(self, x):
+#         out = self.conv(x)
+#         out = self.bn(out)
+#         out = self.lrelu(out)
+#
+#         return out
 
 
 @HEADS.register_module
 class Yolov5Head(nn.Module):
-    def __init__(self,num_classes=80,in_channels=[512, 256, 128],out_channels=[1024, 512, 256],train_cfg=None,test_cfg=None):
+    def __init__(self,num_classes=80,out_channels=[1024, 512, 256],gw=1,train_cfg=None,test_cfg=None):
         super(Yolov5Head, self).__init__()
+        ch = lambda x: math.ceil(x * gw / 8) * 8
         self.num_scales = 3
         self.num_classes_no_bkg =num_classes
         self.num_classes_w_bkg = self.num_classes_no_bkg + 1
@@ -60,7 +61,7 @@ class Yolov5Head(nn.Module):
         # self.out_channels = [1024, 512, 256]
         # self.in_channels = [384, 192, 96]
         # self.out_channels = [768, 384, 192]
-        self.in_channels = in_channels
+        # self.in_channels = in_channels
         self.out_channels = out_channels
         self.scales = ['l', 'm', 's']
         self.strides = [32, 16, 8]
@@ -71,15 +72,15 @@ class Yolov5Head(nn.Module):
                              ]
 
 
-        self.convs_bridge = nn.ModuleList()
+        # self.convs_bridge = nn.ModuleList()
         self.convs_final = nn.ModuleList()
         for i_scale in range(self.num_scales):
-            in_c = self.in_channels[i_scale]
+            # in_c = self.in_channels[i_scale]
             out_c = self.out_channels[i_scale]
-            conv_bridge = ConvLayer(in_c, out_c, 3)
-            conv_final = nn.Conv2d(out_c, self.last_layer_dim, 1, bias=True)
+            # conv_bridge = ConvLayer(in_c, out_c, 3)
+            conv_final = nn.Conv2d(ch(out_c), self.last_layer_dim, 1, bias=True)
 
-            self.convs_bridge.append(conv_bridge)
+            # self.convs_bridge.append(conv_bridge)
             self.convs_final.append(conv_final)
 
         self.train_cfg = train_cfg
