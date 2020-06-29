@@ -284,7 +284,7 @@ class Yolov5Head(nn.Module):
 
         losses = {'xy': 0, 'wh': 0, 'conf': 0, 'cls': 0}
 
-        reduction = 'none'
+        reduction = 'mean'
 
         for i_scale in range(self.num_scales):
             pred_raw = preds_raw[i_scale]
@@ -343,6 +343,9 @@ class Yolov5Head(nn.Module):
                 losses_wh = F.mse_loss(pred_t_wh, gt_t_wh, reduction='none') * pos_mask * 2
 
             if reduction=='mean':
+                if torch.sum(pos_mask)==0:  #nan problem
+                    continue
+
                 losses_cls = F.binary_cross_entropy_with_logits(pred_label[pos_mask.repeat(1, 1, 1, 20).bool()],
                                                                 gt_label[pos_mask.repeat(1, 1, 1, 20).bool()],
                                                                 reduction='mean')
@@ -360,8 +363,7 @@ class Yolov5Head(nn.Module):
 
                 losses_wh = F.mse_loss(pred_t_wh[pos_mask.repeat(1,1,1,2).bool()], gt_t_wh[pos_mask.repeat(1,1,1,2).bool()], reduction='mean')
 
-                if torch.sum(pos_mask)==0:  #nan problem
-                    continue
+
 
             losses['cls'] += torch.sum(losses_cls)
             losses['conf'] += torch.sum(losses_conf)
