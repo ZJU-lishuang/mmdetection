@@ -78,9 +78,21 @@ class Yolov5Neck(nn.Module):  #the name YoloNeck is wrong ,need to modify ,like 
 
 
     def init_weights(self, pretrained=None):
+        # pretrained = '/home/lishuang/Disk/gitlab/traincode/yolov5l_state_dict.pt'
+        #pretrained must be from ultralytics/yolov5
         if isinstance(pretrained, str):
-            logger = logging.getLogger()
-            load_checkpoint(self, pretrained, strict=False, logger=logger)
+            pretrained_checkpoint = torch.load(pretrained)
+            model_dict = self.state_dict()
+            pretrained_dict = {k.replace('model.', 'layer_'): v for k, v in pretrained_checkpoint.items() if
+                               k.replace('model.', 'layer_') in model_dict}
+            model_dict = self.state_dict()
+            model_dict.update(pretrained_dict)
+            self.load_state_dict(model_dict)
+            print("init_neck_weights")
+
+        # if isinstance(pretrained, str):
+        #     logger = logging.getLogger()
+        #     load_checkpoint(self, pretrained, strict=False, logger=logger)
         elif pretrained is None:
             for m in self.modules():
                 if isinstance(m, nn.Conv2d):

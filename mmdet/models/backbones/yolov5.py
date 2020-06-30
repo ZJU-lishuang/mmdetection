@@ -13,6 +13,7 @@ from mmcv.cnn import (build_conv_layer, build_norm_layer, constant_init,
 from mmcv.runner import load_checkpoint
 from torch.nn.modules.batchnorm import _BatchNorm
 
+
 def make_divisible(x, divisor):
     # Returns x evenly divisble by divisor
     return math.ceil(x / divisor) * divisor
@@ -65,18 +66,19 @@ class YoloV5(nn.Module):
 
 
     def init_weights(self, pretrained=None):
-        # if isinstance(pretrained, str):
-        #     pretrained = '/home/lishuang/Disk/dukto/centermask_yolov5l_backbone.pth'
-        #     pretrained_checkpoint=torch.load(pretrained)
-        #     model_dict = self.state_dict()
-        #     pretrained_dict = {k.replace('backbone.body.', ''): v for k, v in pretrained_checkpoint.items() if k.replace('backbone.body.', '') in model_dict}
-        #     model_dict = self.state_dict()
-        #     model_dict.update(pretrained_dict)
-        #     self.load_state_dict(model_dict)
-        #     print("init_weights")
+        # pretrained = '/home/lishuang/Disk/gitlab/traincode/yolov5l_state_dict.pt'
+        # pretrained must be from ultralytics/yolov5
         if isinstance(pretrained, str):
-            logger = get_root_logger()
-            load_checkpoint(self, pretrained, strict=False, logger=logger)
+                pretrained_checkpoint=torch.load(pretrained)
+                model_dict = self.state_dict()
+                pretrained_dict = {k.replace('model.', 'backbone.'): v for k, v in pretrained_checkpoint.items() if k.replace('model.', 'backbone.') in model_dict}
+                model_dict = self.state_dict()
+                model_dict.update(pretrained_dict)
+                self.load_state_dict(model_dict)
+                print("init_backbone_weights")
+        # if isinstance(pretrained, str):
+        #     logger = get_root_logger()
+        #     load_checkpoint(self, pretrained, strict=False, logger=logger)
         elif pretrained is None:
             for m in self.modules():
                 if isinstance(m, nn.Conv2d):
