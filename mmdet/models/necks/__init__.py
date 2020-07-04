@@ -9,5 +9,5 @@ from .panet_spp import PANETSPPNeck
 from .yolov5neck import Yolov5Neck
 
 __all__ = [
-    'FPN', 'BFP', 'HRFPN', 'NASFPN', 'FPN_CARAFE', 'PAFPN', 'NASFCOS_FPN','PANETSPPNeck'
+    'FPN', 'BFP', 'HRFPN', 'NASFPN', 'FPN_CARAFE', 'PAFPN', 'NASFCOS_FPN','PANETSPPNeck','Yolov5Neck'
 ]
