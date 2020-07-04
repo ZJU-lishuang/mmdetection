@@ -15,12 +15,14 @@ from .retina_head import RetinaHead
 from .retina_sepbn_head import RetinaSepBNHead
 from .rpn_head import RPNHead
 from .ssd_head import SSDHead
-from .yolov3head import Yolov3Head
-from .yolov5head import Yolov5Head
+from .solov2_head import SOLOV2Head
+from .solo_head import SOLOHead
+from .decoupled_solo_head import DecoupledSOLOHead
 
 __all__ = [
     'AnchorHead', 'GuidedAnchorHead', 'FeatureAdaption', 'RPNHead',
     'GARPNHead', 'RetinaHead', 'RetinaSepBNHead', 'GARetinaHead', 'SSDHead',
     'FCOSHead', 'RepPointsHead', 'FoveaHead', 'FreeAnchorRetinaHead',
-    'ATSSHead', 'FSAFHead', 'NASFCOSHead', 'PISARetinaHead', 'PISASSDHead','Yolov3Head','Yolov5Head'
+    'ATSSHead', 'FSAFHead', 'NASFCOSHead', 'PISARetinaHead', 'PISASSDHead',
+    'SOLOV2Head', 'SOLOHead', 'DecoupledSOLOHead'
 ]

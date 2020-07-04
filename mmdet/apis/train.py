@@ -40,7 +40,7 @@ def parse_losses(losses):
         elif isinstance(loss_value, list):
             log_vars[loss_name] = sum(_loss.mean() for _loss in loss_value)
         else:
-            raise TypeError(f'{loss_name} is not a tensor or list of tensors')
+            raise TypeError('{loss_name} is not a tensor or list of tensors')
 
     loss = sum(_value for _key, _value in log_vars.items() if 'loss' in _key)
 
@@ -96,13 +96,13 @@ def train_detector(model,
                        'Please use "samples_per_gpu" instead')
         if 'samples_per_gpu' in cfg.data:
             logger.warning(
-                f'Got "imgs_per_gpu"={cfg.data.imgs_per_gpu} and '
-                f'"samples_per_gpu"={cfg.data.samples_per_gpu}, "imgs_per_gpu"'
-                f'={cfg.data.imgs_per_gpu} is used in this experiments')
+                'Got "imgs_per_gpu"={cfg.data.imgs_per_gpu} and '
+                '"samples_per_gpu"={cfg.data.samples_per_gpu}, "imgs_per_gpu"'
+                '={cfg.data.imgs_per_gpu} is used in this experiments')
         else:
             logger.warning(
                 'Automatically set "samples_per_gpu"="imgs_per_gpu"='
-                f'{cfg.data.imgs_per_gpu} in this experiments')
+                '{cfg.data.imgs_per_gpu} in this experiments')
         cfg.data.samples_per_gpu = cfg.data.imgs_per_gpu
 
     data_loaders = [

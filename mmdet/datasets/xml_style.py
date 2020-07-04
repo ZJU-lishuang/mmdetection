@@ -21,9 +21,9 @@ class XMLDataset(CustomDataset):
         data_infos = []
         img_ids = mmcv.list_from_file(ann_file)
         for img_id in img_ids:
+            #print('img_id : ',  img_id)
             filename = f'JPEGImages/{img_id}.jpg'
-            xml_path = osp.join(self.img_prefix, 'Annotations',
-                                f'{img_id}.xml')
+            xml_path = osp.join(self.img_prefix, 'Annotations', f'{img_id}.xml')
             tree = ET.parse(xml_path)
             root = tree.getroot()
             size = root.find('size')
@@ -49,7 +49,7 @@ class XMLDataset(CustomDataset):
         for data_info in self.data_infos:
             img_id = data_info['id']
             xml_path = osp.join(self.img_prefix, 'Annotations',
-                                f'{img_id}.xml')
+                                '{img_id}.xml')
             tree = ET.parse(xml_path)
             root = tree.getroot()
             for obj in root.findall('object'):
@@ -119,7 +119,7 @@ class XMLDataset(CustomDataset):
     def get_cat_ids(self, idx):
         cat_ids = []
         img_id = self.data_infos[idx]['id']
-        xml_path = osp.join(self.img_prefix, 'Annotations', f'{img_id}.xml')
+        xml_path = osp.join(self.img_prefix, 'Annotations', '{img_id}.xml')
         tree = ET.parse(xml_path)
         root = tree.getroot()
         for obj in root.findall('object'):

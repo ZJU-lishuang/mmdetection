@@ -181,10 +181,10 @@ class Resize(object):
 
     def __repr__(self):
         repr_str = self.__class__.__name__
-        repr_str += f'(img_scale={self.img_scale}, '
-        repr_str += f'multiscale_mode={self.multiscale_mode}, '
-        repr_str += f'ratio_range={self.ratio_range}, '
-        repr_str += f'keep_ratio={self.keep_ratio})'
+        repr_str += '(img_scale={self.img_scale}, '
+        repr_str += 'multiscale_mode={self.multiscale_mode}, '
+        repr_str += 'ratio_range={self.ratio_range}, '
+        repr_str += 'keep_ratio={self.keep_ratio})'
         return repr_str
 
 
@@ -225,7 +225,7 @@ class RandomFlip(object):
             flipped[..., 1::4] = h - bboxes[..., 3::4]
             flipped[..., 3::4] = h - bboxes[..., 1::4]
         else:
-            raise ValueError(f"Invalid flipping direction '{direction}'")
+            raise ValueError("Invalid flipping direction '{direction}'")
         return flipped
 
     def __call__(self, results):
@@ -255,7 +255,7 @@ class RandomFlip(object):
         return results
 
     def __repr__(self):
-        return self.__class__.__name__ + f'(flip_ratio={self.flip_ratio})'
+        return self.__class__.__name__ + '(flip_ratio={self.flip_ratio})'
 
 
 @PIPELINES.register_module()
@@ -308,9 +308,9 @@ class Pad(object):
 
     def __repr__(self):
         repr_str = self.__class__.__name__
-        repr_str += f'(size={self.size}, '
-        repr_str += f'size_divisor={self.size_divisor}, '
-        repr_str += f'pad_val={self.pad_val})'
+        repr_str += '(size={self.size}, '
+        repr_str += 'size_divisor={self.size_divisor}, '
+        repr_str += 'pad_val={self.pad_val})'
         return repr_str
 
 
@@ -340,7 +340,7 @@ class Normalize(object):
 
     def __repr__(self):
         repr_str = self.__class__.__name__
-        repr_str += f'(mean={self.mean}, std={self.std}, to_rgb={self.to_rgb})'
+        repr_str += '(mean={self.mean}, std={self.std}, to_rgb={self.to_rgb})'
         return repr_str
 
 
@@ -430,7 +430,7 @@ class RandomCrop(object):
         return results
 
     def __repr__(self):
-        return self.__class__.__name__ + f'(crop_size={self.crop_size})'
+        return self.__class__.__name__ + '(crop_size={self.crop_size})'
 
 
 @PIPELINES.register_module()
@@ -452,7 +452,7 @@ class SegRescale(object):
         return results
 
     def __repr__(self):
-        return self.__class__.__name__ + f'(scale_factor={self.scale_factor})'
+        return self.__class__.__name__ + '(scale_factor={self.scale_factor})'
 
 
 @PIPELINES.register_module()
@@ -543,12 +543,12 @@ class PhotoMetricDistortion(object):
 
     def __repr__(self):
         repr_str = self.__class__.__name__
-        repr_str += f'(\nbrightness_delta={self.brightness_delta},\n'
+        repr_str += '(\nbrightness_delta={self.brightness_delta},\n'
         repr_str += 'contrast_range='
-        repr_str += f'{(self.contrast_lower, self.contrast_upper)},\n'
+        repr_str += '{(self.contrast_lower, self.contrast_upper)},\n'
         repr_str += 'saturation_range='
-        repr_str += f'{(self.saturation_lower, self.saturation_upper)},\n'
-        repr_str += f'hue_delta={self.hue_delta})'
+        repr_str += '{(self.saturation_lower, self.saturation_upper)},\n'
+        repr_str += 'hue_delta={self.hue_delta})'
         return repr_str
 
 
@@ -622,9 +622,9 @@ class Expand(object):
 
     def __repr__(self):
         repr_str = self.__class__.__name__
-        repr_str += f'(mean={self.mean}, to_rgb={self.to_rgb}, '
-        repr_str += f'ratio_range={self.ratio_range}, '
-        repr_str += f'seg_ignore_label={self.seg_ignore_label})'
+        repr_str += '(mean={self.mean}, to_rgb={self.to_rgb}, '
+        repr_str += 'ratio_range={self.ratio_range}, '
+        repr_str += 'seg_ignore_label={self.seg_ignore_label})'
         return repr_str
 
 
@@ -744,8 +744,8 @@ class MinIoURandomCrop(object):
 
     def __repr__(self):
         repr_str = self.__class__.__name__
-        repr_str += f'(min_ious={self.min_ious}, '
-        repr_str += f'min_crop_size={self.min_crop_size})'
+        repr_str += '(min_ious={self.min_ious}, '
+        repr_str += 'min_crop_size={self.min_crop_size})'
         return repr_str
 
 
@@ -770,8 +770,8 @@ class Corrupt(object):
 
     def __repr__(self):
         repr_str = self.__class__.__name__
-        repr_str += f'(corruption={self.corruption}, '
-        repr_str += f'severity={self.severity})'
+        repr_str += '(corruption={self.corruption}, '
+        repr_str += 'severity={self.severity})'
         return repr_str
 
 
@@ -847,7 +847,7 @@ class Albu(object):
             obj_cls = obj_type
         else:
             raise TypeError(
-                f'type must be a str or valid type, but got {type(obj_type)}')
+                'type must be a str or valid type, but got {type(obj_type)}')
 
         if 'transforms' in args:
             args['transforms'] = [
@@ -935,5 +935,5 @@ class Albu(object):
         return results
 
     def __repr__(self):
-        repr_str = self.__class__.__name__ + f'(transforms={self.transforms})'
+        repr_str = self.__class__.__name__ + '(transforms={self.transforms})'
         return repr_str

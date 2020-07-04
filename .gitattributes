@@ -1,1 +1,4 @@
-*.onnx filter=lfs diff=lfs merge=lfs -text
+Pretrained_model/SSD/mobilenet_v2-6a65762b.pth filter=lfs diff=lfs merge=lfs -text
+Pretrained_model/SSD/Pelee_VOC.pth filter=lfs diff=lfs merge=lfs -text
+Pretrained_model/SSD/ssd300_coco_20200307-a92d2092.pth filter=lfs diff=lfs merge=lfs -text
+Pretrained_model/SSD/ssd512_coco_20200308-038c5591.pth filter=lfs diff=lfs merge=lfs -text
