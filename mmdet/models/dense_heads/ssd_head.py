@@ -6,7 +6,7 @@ from mmcv.cnn import xavier_init
 from mmdet.core import (build_anchor_generator, build_assigner,
                         build_bbox_coder, build_sampler, multi_apply)
 from ..builder import HEADS
-from ..losses import smooth_l1_loss
+from ..losses import smooth_l1_loss, giou_loss
 from .anchor_head import AnchorHead
 
 
@@ -31,6 +31,7 @@ class SSDHead(AnchorHead):
                      target_stds=[1.0, 1.0, 1.0, 1.0],
                  ),
                  reg_decoded_bbox=False,
+                 loss_bbox = 'smooth_l1_loss',
                  train_cfg=None,
                  test_cfg=None):
         super(AnchorHead, self).__init__()
@@ -39,6 +40,7 @@ class SSDHead(AnchorHead):
         self.cls_out_channels = num_classes + 1  # add background class
         self.anchor_generator = build_anchor_generator(anchor_generator)
         num_anchors = self.anchor_generator.num_base_anchors
+        self.loss_bbox = loss_bbox
 
         reg_convs = []
         cls_convs = []
@@ -114,12 +116,22 @@ class SSDHead(AnchorHead):
         if self.reg_decoded_bbox:
             bbox_pred = self.bbox_coder.decode(anchor, bbox_pred)
 
-        loss_bbox = smooth_l1_loss(
-            bbox_pred,
-            bbox_targets,
-            bbox_weights,
-            beta=self.train_cfg.smoothl1_beta,
-            avg_factor=num_total_samples)
+        if self.loss_bbox == 'smooth_l1_loss':
+            loss_bbox = smooth_l1_loss(
+                bbox_pred,
+                bbox_targets,
+                bbox_weights,
+                beta=self.train_cfg.smoothl1_beta,
+                avg_factor=num_total_samples)
+        elif self.loss_bbox == 'giou_loss':
+            loss_bbox = giou_loss(
+                bbox_pred,
+                bbox_targets,
+                bbox_weights,
+                eps=1e-7,
+                avg_factor=num_total_samples)
+        else:
+            raise ValueError('Only support smooth_l1_loss or giou_loss for loss_bbox!')
         return loss_cls[None], loss_bbox
 
     def loss(self,

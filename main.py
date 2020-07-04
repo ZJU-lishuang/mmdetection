@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 import argparse
 import copy
 import os
@@ -18,7 +19,7 @@ from mmdet.utils import collect_env, get_root_logger
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a detector')
-    parser.add_argument('config', help='train config file path', default='../configs/pascal_voc/Pelee_voc0712.py')
+    parser.add_argument('--config', help='train config file path', default='./configs/solov2/solov2.py')
     parser.add_argument('--work-dir', help='the dir to save logs and models')
     parser.add_argument(
         '--resume-from', help='the checkpoint file to resume from')
@@ -60,7 +61,6 @@ def parse_args():
         os.environ['LOCAL_RANK'] = str(args.local_rank)
 
     return args
-
 
 def main():
     args = parse_args()
@@ -104,7 +104,7 @@ def main():
     cfg.dump(osp.join(cfg.work_dir, osp.basename(args.config)))
     # init the logger before other steps
     timestamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
-    log_file = osp.join(cfg.work_dir, '{timestamp}.log')
+    log_file = osp.join(cfg.work_dir, f'{timestamp}.log')
     logger = get_root_logger(log_file=log_file, log_level=cfg.log_level)
 
     # init the meta dict to record some important information such as
@@ -112,20 +112,20 @@ def main():
     meta = dict()
     # log env info
     env_info_dict = collect_env()
-    env_info = '\n'.join([('{k}: {v}') for k, v in env_info_dict.items()])
+    env_info = '\n'.join([(f'{k}: {v}') for k, v in env_info_dict.items()])
     dash_line = '-' * 60 + '\n'
     logger.info('Environment info:\n' + dash_line + env_info + '\n' +
                 dash_line)
     meta['env_info'] = env_info
 
     # log some basic info
-    logger.info('Distributed training: {distributed}')
-    logger.info('Config:\n{cfg.pretty_text}')
+    logger.info(f'Distributed training: {distributed}')
+    logger.info(f'Config:\n{cfg.pretty_text}')
 
     # set random seeds
     if args.seed is not None:
-        logger.info('Set random seed to {args.seed}, '
-                    'deterministic: {args.deterministic}')
+        logger.info(f'Set random seed to {args.seed}, '
+                    f'deterministic: {args.deterministic}')
         set_random_seed(args.seed, deterministic=args.deterministic)
     cfg.seed = args.seed
     meta['seed'] = args.seed
@@ -158,4 +158,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+        main()

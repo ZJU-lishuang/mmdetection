@@ -69,10 +69,10 @@ class LoadImageFromFile(object):
         return results
 
     def __repr__(self):
-        repr_str = (f'{self.__class__.__name__}('
-                    f'to_float32={self.to_float32}, '
-                    f"color_type='{self.color_type}', "
-                    f'file_client_args={self.file_client_args})')
+        repr_str = ('{self.__class__.__name__}('
+                    'to_float32={self.to_float32}, '
+                    "color_type='{self.color_type}', "
+                    'file_client_args={self.file_client_args})')
         return repr_str
 
 
@@ -142,10 +142,10 @@ class LoadMultiChannelImageFromFiles(object):
         return results
 
     def __repr__(self):
-        repr_str = (f'{self.__class__.__name__}('
-                    f'to_float32={self.to_float32}, '
-                    f"color_type='{self.color_type}', "
-                    f'file_client_args={self.file_client_args})')
+        repr_str = ('{self.__class__.__name__}('
+                    'to_float32={self.to_float32}, '
+                    "color_type='{self.color_type}', "
+                    'file_client_args={self.file_client_args})')
         return repr_str
 
 
@@ -271,12 +271,12 @@ class LoadAnnotations(object):
 
     def __repr__(self):
         repr_str = self.__class__.__name__
-        repr_str += f'(with_bbox={self.with_bbox}, '
-        repr_str += f'with_label={self.with_label}, '
-        repr_str += f'with_mask={self.with_mask}, '
-        repr_str += f'with_seg={self.with_seg})'
-        repr_str += f'poly2mask={self.poly2mask})'
-        repr_str += f'poly2mask={self.file_client_args})'
+        repr_str += '(with_bbox={self.with_bbox}, '
+        repr_str += 'with_label={self.with_label}, '
+        repr_str += 'with_mask={self.with_mask}, '
+        repr_str += 'with_seg={self.with_seg})'
+        repr_str += 'poly2mask={self.poly2mask})'
+        repr_str += 'poly2mask={self.file_client_args})'
         return repr_str
 
 
@@ -291,7 +291,7 @@ class LoadProposals(object):
         if proposals.shape[1] not in (4, 5):
             raise AssertionError(
                 'proposals should have shapes (n, 4) or (n, 5), '
-                f'but found {proposals.shape}')
+                'but found {proposals.shape}')
         proposals = proposals[:, :4]
 
         if self.num_max_proposals is not None:
@@ -305,4 +305,4 @@ class LoadProposals(object):
 
     def __repr__(self):
         return self.__class__.__name__ + \
-            f'(num_max_proposals={self.num_max_proposals})'
+            '(num_max_proposals={self.num_max_proposals})'
